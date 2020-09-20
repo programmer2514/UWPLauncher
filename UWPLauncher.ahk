@@ -117,11 +117,11 @@ If (A_Args[1])
         StdOut(" ", false)
         StdOut(" ", false)
         StdOut(" ", false)
-        
+
         ; Display help message
         ; StdOut("You appear to have a development build. Good for you!`nI wonder how you got it...", false)
         StdOut("Executes or creates a link to any Universal Windows Program.`n`nuwplauncher [option] [-p] [-n] [appid]`nUWPLAUNCHER [OPTION] [/P] [/N] [APPID]`n`nOptions:`n  /C, -c, --clean-data         Remove psexec.exe, app lists, and converted .ico files, standalone`n  /D, -d, --download-psexec    Download psexec.exe, overwrites current copy, standalone`n  /F, -f, --fullscreen         Launch the specified application in fullscreen mode`n  /G, -g, --gui                Start the application in GUI mode, standalone`n  /?, -h, --help               Shows this help text, standalone`n  /I, -i, --get-icon           Extracts the icon of the specified application instead of launching it`n  /L, -l, --link               Create a link to the specified application instead of launching it`n  /N, -n, --name               Specifies that AppID should be a name, if omitted, uses unique ID`n  /P, -p, --png                Outputs a .png instead of a .ico, only used with --get-icon`n  /S, -s, --add-to-steam       Adds the specified application to Steam`n  /U, -u, --update-lists       Updates the lists necessary to perform operations, standalone`n`nIf the name switch is omitted, AppID should be the unique identifier of the app to launch`n  Ex:  uwplauncher Microsoft.WindowsCalculator_8wekyb3d8bbwe!App`n`nIf the name switch is specified, AppID should be the literal name of the app to launch`n  Ex:  uwplauncher --name Calculator", false)
-        
+
         StdOut(" ", false)
         StdExit()
         Goto, MainGuiClose
@@ -179,7 +179,7 @@ If (A_Args[1])
         AppListResult := A_Args[3]
 
     }
-    
+
     If ((A_Args[3] = "-n") || (A_Args[3] = "--name") || (A_Args[3] = "/N"))
     {
         ; Load whole app list file into AppsList
@@ -336,35 +336,35 @@ If (A_Args[1])
 
         ; Trim whitespace off end of string
         AppListResult := RTrim(AppListResult, " ")
-    
+
         ; Get family name of selected app
         Loop, Parse, AppListResult, %A_Space%
         {
             AppID := A_LoopField
         }
-    
+
         ; Get name of selected app
         AppName := RTrim(AppListResult, AppID)
         AppName := RTrim(AppName, " ")
-    
+
         ; Check for necessary files
         If (!FileExist("bin\psexec.exe"))
         {
             StdOut("Icon extraction failed. PSExec is missing.`nPlease run ""UWPLauncher --download-psexec"" to download it.", false)
-            
+
         } else {
-            
+
             If (IsIcon = 2) {
-            
+
                 ; Generate .png file
                 RunWait, "%A_WorkingDir%\bin\psexec.exe" /accepteula -sid "%A_WorkingDir%\bin\convert.exe" "%FullIconPath%" "%A_Desktop%\%AppName%.png",, Hide
 
                 StdOut(" ", false)
                 StdOut(" ", false)
                 StdOut("Icon extracted as PNG and placed on desktop.", false)
-                
+
             } else {
-            
+
                 ; Generate .ico file
                 RunWait, "%A_WorkingDir%\bin\psexec.exe" /accepteula -sid "%A_WorkingDir%\bin\convert.exe" "%FullIconPath%" "%A_Desktop%\%AppName%.ico",, Hide
 
@@ -372,9 +372,9 @@ If (A_Args[1])
                 StdOut(" ", false)
                 StdOut("Icon extracted as ICO and placed on desktop.", false)
             }
-            
+
         }
-    
+
         StdOut(" ", false)
         StdExit()
 
@@ -436,38 +436,38 @@ If (A_Args[1])
 
         ; Extract Icon
         GoSub, GetAppIcon
-        
+
         ; Get AppName
         AppName := RTrim(AppListResult, AppID)
         AppName := RTrim(AppName, " ")
-    
+
         ; Get family name of selected app
         Loop, Parse, AppListResult, %A_Space%
         {
             AppID := A_LoopField
         }
-        
+
         ; Get AppPath
         If (IsSteam = 2) {
             AppPath = "%A_ScriptFullPath%" -f %AppID%
         } else {
             AppPath = "C:\Windows\explorer.exe" shell:AppsFolder\%AppID%
         }
-    
+
         ; Check for necessary files
         If (!FileExist("bin\psexec.exe"))
         {
             StdOut("Icon extraction failed. PSExec is missing.`nPlease run ""UWPLauncher --download-psexec"" to download it.", false)
-            
+
         } else {
-            
+
             ; Generate .png file
             RunWait, "%A_WorkingDir%\bin\psexec.exe" /accepteula -sid "%A_WorkingDir%\bin\convert.exe" "%FullIconPath%" "%A_WorkingDir%\ico\%AppName%.png",, Hide
         }
-        
+
         ; Get AppIcon
         AppIcon = "%A_WorkingDir%\ico\%AppName%.png"
-        
+
         ; Add app to Steam
         GoSub, AddAppToSteam
 
@@ -477,9 +477,9 @@ If (A_Args[1])
         StdOut("Restart Steam for the changes to take effect.", false)
         StdOut(" ", false)
         StdExit()
-    
+
     } Else {
-    
+
         GoSub, StartApp
     }
 
@@ -715,59 +715,59 @@ GUIAddToSteam:
 
     ; Extract Icon
     GoSub, GetAppIcon
-    
+
     ; Get AppName
     AppName := RTrim(AppListResult, AppID)
     AppName := RTrim(AppName, " ")
-    
+
     ; Get family name of selected app
     Loop, Parse, AppListResult, %A_Space%
     {
         AppID := A_LoopField
     }
-    
+
     MsgBox, 0x23, Launch Fullscreen?, Would you like this application to be launched full screen from Steam?`nThis requires UWPLauncher to remain installed in its current location.
-    
+
     IfMsgBox Yes
         IsSteam = 2
-        
+
     IfMsgBox No
         IsSteam = 1
-        
+
     IfMsgBox Cancel
         Return
-    
+
     ; Get AppPath
     If (IsSteam = 2) {
         AppPath = "%A_ScriptFullPath%" -f %AppID%
     } else {
         AppPath = "C:\Windows\explorer.exe" shell:AppsFolder\%AppID%
     }
-    
+
     ; Check for necessary files
     If (!FileExist("bin\psexec.exe"))
     {
         MsgBox, 0x30, Missing Binaries, PSExec could not be found!`n`nApp will be added without an icon.`nPlease restart the application to download necessary binaries.`nYou can also run "UWPLauncher --download-psexec" to download it.
         NoAppIcon = 1
-        
+
     } else {
-        
+
         ; Generate .png file
         RunWait, "%A_WorkingDir%\bin\psexec.exe" /accepteula -sid "%A_WorkingDir%\bin\convert.exe" "%FullIconPath%" "%A_WorkingDir%\ico\%AppName%.png",, Hide
         NoAppIcon = 0
     }
-    
+
     ; Get AppIcon
     AppIcon = "%A_WorkingDir%\ico\%AppName%.png"
-    
+
     If (NoAppIcon = 1)
         AppIcon = ""
-    
+
     ; Add app to Steam
     GoSub, AddAppToSteam
 
     MsgBox, 0x40, App Added Successfully, App added to Steam.`nRestart Steam for the changes to take effect.
-    
+
 Return
 
 GUIExtractIcon:
@@ -780,51 +780,51 @@ GUIExtractIcon:
 
     ; Trim whitespace off end of string
     AppListResult := RTrim(AppListResult, " ")
-    
+
     ; Get family name of selected app
     Loop, Parse, AppListResult, %A_Space%
     {
         AppID := A_LoopField
     }
-    
+
     ; Get name of selected app
     AppName := RTrim(AppListResult, AppID)
     AppName := RTrim(AppName, " ")
-    
+
     MsgBox, 0x23, Choose output type, Select output type:`n  Yes = .png`n  No = .ico
-    
+
     IfMsgBox Yes
         IsIcon = 2
-        
+
     IfMsgBox No
         IsIcon = 1
-        
+
     IfMsgBox Cancel
         Return
-    
+
     ; Check for necessary files
     If (!FileExist("bin\psexec.exe"))
     {
         MsgBox, 0x30, Missing Binaries, PSExec could not be found!`n`nApp icon will not be created.`nPlease restart the application to download necessary binaries.`nYou can also run "UWPLauncher --download-psexec" to download it.
         Return
-        
+
     } else {
-        
+
         If (IsIcon = 2) {
-        
+
             ; Generate .png file
             RunWait, "%A_WorkingDir%\bin\psexec.exe" /accepteula -sid "%A_WorkingDir%\bin\convert.exe" "%FullIconPath%" "%A_Desktop%\%AppName%.png",, Hide
 
             MsgBox, 0x40, Success, Icon extracted as PNG and placed on desktop.
-            
+
         } else {
-        
+
             ; Generate .ico file
             RunWait, "%A_WorkingDir%\bin\psexec.exe" /accepteula -sid "%A_WorkingDir%\bin\convert.exe" "%FullIconPath%" "%A_Desktop%\%AppName%.ico",, Hide
 
             MsgBox, 0x40, Success, Icon extracted as ICO and placed on desktop.
         }
-        
+
     }
 
 Return
@@ -986,58 +986,58 @@ ElevateScript:
 Return
 
 AddAppToSteam:
-    
+
     ; Get first folder in userdata directory
     Loop, Files, C:\Program Files (x86)\Steam\userdata\*, D
     {
         UserDataFolder = %A_LoopFileLongPath%
         Break
     }
-    
+
     ; Define file
     File = %UserDataFolder%\config\shortcuts.vdf
-    
+
     ; Make sure file exists
     If (!FileExist(File))
     {
         MsgBox, 0x10, Critical Error, Steam configuration files are missing or corrupted.`nApp will not be added.
         Return
     }
-    
+
     ; Open template and destination files
     FileObject := FileOpen(File, "rw")
     TemplateObject := FileOpen("vdf\template.vdf", "r")
     BackspaceObject := FileOpen("vdf\bs.bin", "r")
-    
+
     ; Read template and destination files
     FileLen := FileObject.RawRead(FileData, FileObject.Length)
     BackspaceObject.RawRead(BackspaceData, 2)
-    
+
     ; Initialize variables
     AppNum = 0
     FileLen := FileLen - 1
     SkipLoop = 0
-    
+
     ; Navigate to the beginning of the destination file
     FileObject.Seek(0, 0)
-    
+
     ; Loop through binary data
     Loop, %FileLen%
     {
         If (SkipLoop) {
-            
+
             ; Skip 1 byte of file
             FileObject.Seek(1, 1)
             SkipLoop = 0
-            
+
         } else {
-            
+
             ; Read 2 bytes of file
             FileObject.RawRead(TestData, 2)
-            
+
             ; Move pointer back 1 byte
             FileObject.Seek(-1, 1)
-            
+
             ; If the pattern `b`b is found, increment AppNum
             If (BufferCompare(TestData, BackspaceData) = 0)
             {
@@ -1046,77 +1046,77 @@ AddAppToSteam:
             }
         }
     }
-    
+
     ; Decrement AppNum
     AppNum -= 1
-    
+
     ; Convert AppNum to a string
     AppNumDat := "" AppNum
-    
+
     ; Navigate to the beginning of the destination file
     FileObject.Seek(0, 0)
-    
+
     ; Delete last 2 bytes from destination file and append template to end
     FileObject.RawWrite(FileData, FileObject.Length - 2)
-    
+
     ; Read first section of TemplateObject
     TemplateObject.RawRead(TemplateData, 1)
-    
+
     ; Write first part of template
     FileObject.RawWrite(TemplateData, 1)
-    
+
     ; Write AppNum
     Loop, Parse, AppNumDat
     {
         TempVar := A_LoopField
         FileObject.WriteChar(Asc(TempVar))
     }
-    
+
     ; Read second section of TemplateObject
     TemplateObject.RawRead(TemplateData, 10)
-    
+
     ; Write second part of template
     FileObject.RawWrite(TemplateData, 10)
-    
+
     ; Write AppName
     Loop, Parse, AppName
     {
         TempVar := A_LoopField
         FileObject.WriteChar(Asc(TempVar))
     }
-    
+
     ; Read third section of TemplateObject
     TemplateObject.RawRead(TemplateData, 6)
-    
+
     ; Write third part of template
     FileObject.RawWrite(TemplateData, 6)
-    
+
     ; Write AppPath
     Loop, Parse, AppPath
     {
         TempVar := A_LoopField
         FileObject.WriteChar(Asc(TempVar))
     }
-    
+
     ; Read fourth section of TemplateObject
     TemplateObject.RawRead(TemplateData, 31)
-    
+
     ; Write fourth part of template
     FileObject.RawWrite(TemplateData, 31)
-    
+
     ; Write AppIcon
     Loop, Parse, AppIcon
     {
         TempVar := A_LoopField
         FileObject.WriteChar(Asc(TempVar))
     }
-    
+
     ; Read fifth section of TemplateObject
     TemplateObject.RawRead(TemplateData, 155)
-    
+
     ; Write fifth part of template
     FileObject.RawWrite(TemplateData, 155)
-    
+
     ; Close template and destination files
     FileObject.Close()
     TemplateObject.Close()
