@@ -1,11 +1,12 @@
-﻿;--------------------------------------------------------------------------------;
-;                                UWPLauncher v2.0                                ;
-;                               By: Benjmain Pryor                               ;
-;--------------------------------------------------------------------------------;
-; Changelog:                                                                     ;
-;   - 2020-09-15, v1.0 : First Release                                           ;
-;   - 2020-09-20, v2.0 : Added icon extraction, Steam support, and --gui flag    ;
-;--------------------------------------------------------------------------------;
+﻿;----------------------------------------------------------------------------------------;
+;                                    UWPLauncher v2.0                                    ;
+;                                   By: Benjmain Pryor                                   ;
+;----------------------------------------------------------------------------------------;
+; Changelog:                                                                             ;
+;   - 2020-09-15, v1.0 : First Release                                                   ;
+;   - 2020-09-20, v2.0 : Added icon extraction, Steam support, and --gui flag            ;
+;   - 2020-09-20, v2.1 : Fixed bug caused by spaces in the script's working directory    ;
+;----------------------------------------------------------------------------------------;
 
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 ; #Warn  ; Enable warnings to assist with detecting common errors.
@@ -13,7 +14,7 @@ SendMode Input  ; Recommended for new scripts due to its superior speed and reli
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 ; Purge old app lists
-DeleteOlderThan("%A_WorkingDir%\config\*", 7, 1)
+DeleteOlderThan("config\*", 7, 1)
 
 ; If there are command line arguments, parse them, otherwise, run GUI
 If (A_Args[1])
@@ -64,8 +65,8 @@ If (A_Args[1])
         StdOut("Updating app lists...", false)
 
         ; Create a new list of installed applications
-        RunWait, powershell "get-StartApps | Ft -autosize | out-string -width 4096" > %A_WorkingDir%\config\apps-list.txt,, Hide
-        RunWait, powershell "Get-AppxPackage" > %A_WorkingDir%\config\apps-data.txt,, Hide
+        RunWait, powershell "get-StartApps | Ft -autosize | out-string -width 4096" > config\apps-list.txt,, Hide
+        RunWait, powershell "Get-AppxPackage" > config\apps-data.txt,, Hide
 
         StdOut("App lists updated successfully.", false)
         StdOut(" ", false)
@@ -81,7 +82,7 @@ If (A_Args[1])
         StdOut("Downloading PSExec from https://live.sysinternals.com/...", false)
 
         ; Download PSExec
-        UrlDownloadToFile, https://live.sysinternals.com/PSExec.exe, %A_WorkingDir%\bin\psexec.exe
+        UrlDownloadToFile, https://live.sysinternals.com/PSExec.exe, bin\psexec.exe
 
         If (ErrorLevel)
             StdOut("PSExec download failed.", false)
@@ -100,11 +101,11 @@ If (A_Args[1])
         StdOut("Cleaning app data...", false)
 
         ; Clean up files
-        FileRemoveDir, %A_WorkingDir%\ico, 1
-        FileCreateDir, %A_WorkingDir%\ico
-        FileRemoveDir, %A_WorkingDir%\config, 1
-        FileCreateDir, %A_WorkingDir%\config
-        FileDelete, %A_WorkingDir%\bin\psexec.exe
+        FileRemoveDir, ico, 1
+        FileCreateDir, ico
+        FileRemoveDir, config, 1
+        FileCreateDir, config
+        FileDelete, bin\psexec.exe
 
         StdOut("App data cleaned successfully.", false)
         StdOut(" ", false)
@@ -509,7 +510,7 @@ BeginUI:
             MsgBox, 0x34, Warning, This file may be flagged as unsafe by certain antiviruses.`n`nThis is because it runs with the priveleges required to read and modify the source code of Windows applications.`n`nContinue download?
             IfMsgBox Yes
             {
-                UrlDownloadToFile, https://live.sysinternals.com/PSExec.exe, %A_WorkingDir%\bin\psexec.exe
+                UrlDownloadToFile, https://live.sysinternals.com/PSExec.exe, bin\psexec.exe
                 If (ErrorLevel)
                     MsgBox, 0x10, Download failed, Error!`nDownload failed, skipping..., 3
                 Else
@@ -531,8 +532,8 @@ BeginUI:
     Gui, Splash: show, AutoSize Center
 
     ; Create a new list of installed applications
-    RunWait, powershell "get-StartApps | Ft -autosize | out-string -width 4096" > %A_WorkingDir%\config\apps-list.txt,, Hide
-    RunWait, powershell "Get-AppxPackage" > %A_WorkingDir%\config\apps-data.txt,, Hide
+    RunWait, powershell "get-StartApps | Ft -autosize | out-string -width 4096" > config\apps-list.txt,, Hide
+    RunWait, powershell "Get-AppxPackage" > config\apps-data.txt,, Hide
 
     ; Update splash screen
     var = %A_WorkingDir%\img\splash-screen-2.gif
@@ -681,7 +682,7 @@ StartAppFullscreen:
     Gosub, StartApp
 
     ;Make sure app is running
-    WinWait, %AppName%,, 1
+    WinWait, %AppName%,, 5
 
     ; Make app fullscreen
     Send {LWin down}{Shift down}{Enter}{Shift up}{LWin up}
@@ -873,8 +874,8 @@ GetAppIcon:
     Gui, Submit, NoHide
 
     ; Reset FullIconPath
-    FullIconPath = %A_WorkingDir%\img\no-icon.ico
-    DefaultIconPath = %A_WorkingDir%\img\no-icon.ico
+    FullIconPath = img\no-icon.ico
+    DefaultIconPath = img\no-icon.ico
 
     ; Trim whitespace off end of string
     AppListResult := RTrim(AppListResult, " ")
@@ -947,11 +948,11 @@ CleanUpData:
     IfMsgBox OK
     {
         ; Clean up files
-        FileRemoveDir, %A_WorkingDir%\ico, 1
-        FileCreateDir, %A_WorkingDir%\ico
-        FileRemoveDir, %A_WorkingDir%\config, 1
-        FileCreateDir, %A_WorkingDir%\config
-        FileDelete, %A_WorkingDir%\bin\psexec.exe
+        FileRemoveDir, ico, 1
+        FileCreateDir, ico
+        FileRemoveDir, config, 1
+        FileCreateDir, config
+        FileDelete, bin\psexec.exe
 
         MsgBox, 0x24, Exit App?, Files cleaned up successfully.`nExit app?
 
