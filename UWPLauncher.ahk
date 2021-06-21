@@ -1,11 +1,12 @@
 ﻿;----------------------------------------------------------------------------------------;
-;                                    UWPLauncher v2.0                                    ;
+;                                    UWPLauncher v2.2                                    ;
 ;                                   By: Benjmain Pryor                                   ;
 ;----------------------------------------------------------------------------------------;
 ; Changelog:                                                                             ;
 ;   - 2020-09-15, v1.0 : First Release                                                   ;
 ;   - 2020-09-20, v2.0 : Added icon extraction, Steam support, and --gui flag            ;
-;   - 2020-09-20, v2.1 : Fixed bug caused by spaces in the script's working directory    ;
+;   - 2020-09-20, v2.1 : Fixed a bug caused by spaces in the script's working directory  ;
+;   - 2021-06-21, v2.2 : Fixed a bug causing fullscreen mode not to work                 ;
 ;----------------------------------------------------------------------------------------;
 
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
@@ -672,7 +673,7 @@ StartApp:
     }
 
     ; Execute app
-    Run, "C:\Windows\explorer.exe" shell:AppsFolder\%AppID%
+    RunWait, "C:\Windows\explorer.exe" shell:AppsFolder\%AppID%
 
 Return
 
@@ -680,9 +681,9 @@ StartAppFullscreen:
 
     ; Call StartApp
     Gosub, StartApp
-
-    ;Make sure app is running
-    WinWait, %AppName%,, 5
+    
+    ; Delay Send command by 1 second
+    Sleep, 1000
 
     ; Make app fullscreen
     Send {LWin down}{Shift down}{Enter}{Shift up}{LWin up}
